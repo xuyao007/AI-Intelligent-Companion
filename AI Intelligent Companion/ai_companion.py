@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 import json
 import sqlite3
-import sqlite3
 
 # 设置页面的配置项
 st.set_page_config(
