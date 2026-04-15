@@ -207,9 +207,6 @@ def export_as_json():
 # 大标题
 st.title("AI智能伴侣")
 
-# logo
-st.logo("resources/logo.png")
-
 # 系统提示词
 system_prompt = """
                     角色定位
