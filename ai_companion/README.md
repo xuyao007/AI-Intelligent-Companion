@@ -1,167 +1,176 @@
 # AI智能伴侣
 
-用 Streamlit + DeepSeek 做的一个聊天应用，可以自定义 AI 的性格和昵称，对话记录会自动保存。
+一个基于 Streamlit + DeepSeek 的 AI 聊天应用，支持自定义人设、多会话管理、对话记忆和记录导出。
 
-## 能做什么
+## 功能特性
 
-- 和 AI 聊天，支持流式输出（不用等它说完才显示）
-- 给 AI 起名字、设定性格
-- 多个会话切换，历史记录自动保存
-- 数据存在 SQLite 数据库里
+### 核心功能
+- **实时对话**：流式输出，AI 回复逐字显示
+- **角色定制**：自定义 AI 昵称和性格描述
+- **多会话管理**：新建、切换、删除会话，历史自动保存
+- **SQLite 存储**：数据持久化到本地数据库
 
-## 用的技术
+### 新增功能
 
-- Streamlit（做界面的）
-- DeepSeek API（AI 模型）
-- SQLite（存数据）
-- OpenAI Python SDK（调 API 用的）
+#### 🎭 角色预设模板
+内置 8 种性格模板，一键切换：
+- 🌸 温柔体贴、🧊 理性冷静、😄 幽默风趣、💼 成熟稳重
+- 📚 知性优雅、🔥 热情奔放、🎯 毒舌傲娇、🌙 神秘高冷
 
-## 安装
+#### 🧠 智能记忆
+- AI 自动从对话中提取你的喜好、习惯、个人情况
+- 记忆跨会话持久化，所有对话都能调用
+- 最多保留 20 条记忆，自动去重
+- 可手动清空
+
+#### 📄 记录导出
+- **TXT 格式**：便于阅读，带会话信息和时间戳
+- **JSON 格式**：结构化数据，便于程序处理
+
+## 技术栈
+
+- **前端**：Streamlit（Web 界面）
+- **AI 模型**：DeepSeek API（deepseek-chat）
+- **数据存储**：SQLite（本地数据库）
+- **SDK**：OpenAI Python SDK
+
+## 快速开始
+
+### 1. 安装依赖
 
 ```bash
 pip install streamlit openai
 ```
 
-## 配置 API Key
+### 2. 配置 API Key
 
-先去 [DeepSeek 官网](https://platform.deepseek.com/) 注册个账号，拿到 API Key。
+注册 [DeepSeek](https://platform.deepseek.com/) 获取 API Key，然后设置环境变量：
 
-然后设置环境变量：
-
-```bash
+```powershell
 # Windows PowerShell
-$env:DEEPSEEK_API_KEY="你的key"
+$env:DEEPSEEK_API_KEY="sk-xxxxxxxx"
 
-# Linux/Mac
-export DEEPSEEK_API_KEY="你的key"
+# Linux / macOS
+export DEEPSEEK_API_KEY="sk-xxxxxxxx"
 ```
 
-也可以装个 `python-dotenv`，在项目里放个 `.env` 文件。
+或者用 `python-dotenv`，创建 `.env` 文件：
+```
+DEEPSEEK_API_KEY=sk-xxxxxxxx
+```
 
-## 运行
+### 3. 运行
 
 ```bash
 cd ai
 streamlit run AI智能伴侣.py
 ```
 
-跑起来后浏览器会自动打开，一般是 `http://localhost:8501`
+浏览器会自动打开 `http://localhost:8501`
 
-## 怎么用
+## 使用说明
 
 ### 聊天
+底部输入框打字发送，AI 回复会实时流式输出。
 
-直接在底部输入框打字，回车或者点发送就行。AI 的回复会一个字一个字蹦出来。
+### 修改人设
+侧边栏"伴侣信息"区域：
+- **角色模板**：下拉选择 8 种预设性格
+- **伴侣昵称**：自定义 AI 名字
+- **伴侣性格**：手动编辑性格描述（模板可覆盖）
 
-### 改 AI 的人设
+### 会话管理
+- **新建会话**：点击"✏️ 新建会话"，当前会话自动保存
+- **加载历史**：侧边栏"历史会话"列表，点击切换
+- **删除会话**：点击会话旁边的 🗑️ 图标
 
-左边侧边栏有个"伴侣信息"，可以改：
-- **昵称**：你想叫它什么（默认叫"小美"）
-- **性格**：描述一下它的性格，比如"活泼开朗"、"温柔体贴"之类的
+### 记忆功能
+AI 会在每次对话后自动提取关键信息（你的喜好、习惯等），显示在侧边栏"记忆功能"区域。这些记忆在所有会话中共享，AI 会根据记忆调整回复风格。
 
-### 管理会话
-
-**新建会话**：点侧边栏上面的"✏️ 新建会话"，当前的对话会自动保存，然后开个新的。
-
-**加载历史**：侧边栏"历史会话"下面列出了所有聊过的会话，点名字就能加载。当前会话是蓝色的。
-
-**删除会话**：点会话名旁边的 🗑️ 图标就删了。
-
-### 数据存在哪
-
-所有聊天记录都存在 `sessions.db` 这个文件里（SQLite 数据库）。
-
-表结构长这样：
-```sql
-CREATE TABLE sessions (
-    session_name TEXT PRIMARY KEY,  -- 会话名，用时间戳命名
-    nick_name TEXT NOT NULL,        -- AI 昵称
-    nature TEXT NOT NULL,           -- 性格描述
-    messages TEXT NOT NULL,         -- 聊天记录（JSON 字符串）
-    created_at TIMESTAMP            -- 创建时间
-)
-```
+### 导出记录
+侧边栏底部"导出聊天记录"，支持 TXT 和 JSON 两种格式。
 
 ## 项目结构
 
 ```
 ai/
-├── AI智能伴侣.py              # 主程序
-├── resources/                  # 图片啥的
-│   ├── logo.png               # Logo
-│   └── ...
-├── sessions.db                # 数据库（运行后自动生成）
-├── 01. deepseek调用测试.py    # 测试 API 的
-├── 02. json模块入门.py        # 学习 JSON 用的
-├── 02. streamlit入门.py       # 学习 Streamlit 用的
-└── sessions/                  # 老版本的 JSON 存储（不用了）
+├── AI智能伴侣.py          # 主程序
+├── sessions.db            # SQLite 数据库（运行后自动生成）
+├── resources/
+│   └── logo.png          # 应用图标
+├── sessions_b/           # 旧版 JSON 备份
+└── *.py                  # 学习/测试文件
 ```
 
-## 关于系统提示词
+## 数据库结构
 
-代码里写了挺长一段 system prompt，主要规定了 AI 应该怎么聊天：
+```sql
+CREATE TABLE sessions (
+    session_name TEXT PRIMARY KEY,     -- 会话名（时间戳）
+    nick_name TEXT NOT NULL,           -- AI 昵称
+    nature TEXT NOT NULL,              -- 性格描述
+    messages TEXT NOT NULL,            -- 聊天记录（JSON）
+    memories TEXT DEFAULT '[]',        -- 用户记忆（JSON）
+    created_at TIMESTAMP               -- 创建时间
+)
+```
 
-- 要主动关心人，记住之前聊过的内容
-- 情绪低落时先共情，别急着给建议
-- 说话像朋友一样自然，别太正式
-- 可以适当用 emoji
-- 别装医生律师，遇到严重问题建议找专业人士
+## 核心函数
 
-想改的话直接改代码里的 `system_prompt` 变量就行。
+| 函数 | 功能 |
+|------|------|
+| `init_db()` | 初始化数据库，创建表 |
+| `save_session()` | 保存当前会话到数据库 |
+| `load_sessions()` | 获取所有会话列表 |
+| `load_session(name)` | 加载指定会话 |
+| `delete_session(name)` | 删除指定会话 |
+| `extract_memories()` | 调用 AI 提取用户记忆 |
+| `merge_memories()` | 合并去重记忆列表 |
+| `export_as_txt()` | 导出 TXT 格式记录 |
+| `export_as_json()` | 导出 JSON 格式记录 |
 
-## 代码说明
+## Session State
 
-几个主要的函数：
+| 状态变量 | 说明 |
+|----------|------|
+| `messages` | 当前会话的聊天记录 |
+| `nick_name` | AI 昵称 |
+| `nature` | AI 性格描述 |
+| `memories` | 用户记忆列表（跨会话共享） |
+| `current_session` | 当前会话名称 |
 
-- `init_db()` - 初始化数据库，建表
-- `save_session()` - 把当前对话存到数据库
-- `load_sessions()` - 读取所有会话列表
-- `load_session(name)` - 加载某个会话
-- `delete_session(name)` - 删掉某个会话
-- `generate_session_name()` - 用时间戳生成会话名
+## 优化记录
 
-状态都用 `st.session_state` 存着：
-- `messages` - 聊天记录
-- `nick_name` - AI 名字
-- `nature` - AI 性格
-- `current_session` - 当前会话名
+- 程序启动时初始化数据库，避免重复调用
+- 移除冗余的会话存在性检查，直接使用 `INSERT OR REPLACE`
+- 列表推导式简化数据提取逻辑
+- 记忆提取错误改用控制台输出，不打断用户
 
-## 注意点
+## 注意事项
 
-1. API Key 别传到 GitHub 上
-2. `sessions.db` 记得备份，不然聊天记录没了
-3. 需要联网才能用（要调 API）
-4. DeepSeek API 是要花钱的，注意用量
+1. **API Key 安全**：不要把 API Key 提交到代码仓库
+2. **数据备份**：定期备份 `sessions.db`，防止聊天记录丢失
+3. **网络依赖**：需要联网调用 DeepSeek API
+4. **API 费用**：DeepSeek 按用量计费，注意控制调用频率
 
 ## 常见问题
 
 **Q: 报错说找不到模块？**  
-A: `pip install streamlit openai` 装一下
+A: `pip install streamlit openai` 安装依赖
 
 **Q: 发了消息没反应？**  
-A: 检查 API Key 有没有设对
+A: 检查 API Key 是否正确设置
 
-**Q: 聊天记录在哪看？**  
-A: 都在 `sessions.db` 里，侧边栏能看到历史会话
+**Q: 切换会话时闪退/报错？**  
+A: 如果是旧版本升级，删除 `sessions.db` 重新生成（旧表结构缺少 `memories` 字段）
 
-**Q: 能导出聊天记录吗？**  
-A: 可以用数据库工具打开 `sessions.db` 自己导
-
-## 更新记录
-
-**v2.0**（现在这个版本）
-- 改成用 SQLite 存数据了（之前是 JSON 文件）
-- 加载会话快了一些
-- 自动记录创建时间
-
-**v1.0**
-- 最基本的聊天功能
-- 用 JSON 文件存数据
+**Q: 记忆功能不生效？**  
+A: 检查 AI 返回的 JSON 格式是否正确，错误信息会打印到控制台
 
 ## 许可证
 
-随便玩玩，别商用就行。
+个人学习使用，禁止商用。
 
 ---
 
-有问题欢迎提 issue~
+有问题欢迎提 issue。
